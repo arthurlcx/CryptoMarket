@@ -285,12 +285,12 @@ public class CryptoMarket {
             }
 
             System.out.println("\n.\n.\n.\nTransaction Successful.");
-            
-            //userID, buy, cryptoName, quantityBought, amountDesposirt
-            bw.write(user[userNumber].getuserID() + " buy " + cryptocurrency[cryptoChoice - 1].getCryptoName() + " " + Double.toString(quantity) + " " + Double.toString(deposit));
+
+            //userID, buy, cryptoName, quantityBought
+            bw.write(user[userNumber].getuserID() + " buy " + cryptocurrency[cryptoChoice - 1].getCryptoName() + " " + Double.toString(quantity));
             bw.newLine();
             bw.close();
-            
+
             System.out.println("Buy Transaction Saved\n");
         }
     }
@@ -425,10 +425,15 @@ public class CryptoMarket {
     /**
      * *
      * Method to sell cryptocurrency
+     *
+     * @throws java.io.IOException
      */
-    public static void toSell() {
+    public static void toSell() throws IOException {
         scanner = new Scanner(System.in);
         boolean sellStatus = true; //sell approval
+        File transactionFile = new File("Transaction.txt");
+        FileWriter transactionFileWriter = new FileWriter(transactionFile, true);
+        BufferedWriter bw = new BufferedWriter(transactionFileWriter);
         printSellMarket();
 
         System.out.println("\nWALLET\n===========");
@@ -522,6 +527,13 @@ public class CryptoMarket {
 
                     System.out.println("\n.\n.\n.\nTransaction Successful.");
 
+                    //userID, sell, cryptoName, quantitySell
+                    bw.write(user[userNumber].getuserID() + " sell " + cryptocurrency[cryptoChoice - 1].getCryptoName() + " " + Double.toString(quantity));
+                    bw.newLine();
+                    bw.close();
+
+                    System.out.println("Sell Transaction Saved\n");
+
                 case "N":
                     break;
             }
@@ -535,15 +547,22 @@ public class CryptoMarket {
      * *
      * Method to deposit extra funds into user account to purchase coins in
      * future
+     *
+     * @throws java.io.IOException
      */
-    public static void toDeposit() {
+    public static void toDeposit() throws IOException {
         scanner = new Scanner(System.in);
+        File transactionFile = new File("DpsWdrw.txt");
+        FileWriter transactionFileWriter = new FileWriter(transactionFile, true);
+        BufferedWriter bw = new BufferedWriter(transactionFileWriter);
         boolean depositStatus = false; //deposit approval
 
         System.out.println("\nDEPOSIT FUND\n================\nCurrent account information: \n");
         System.out.println("Name: " + user[userNumber].getName() + "\n" + "Current Account Balance: " + String.format("%.2f", user[userNumber].getAccountBalance()));
         System.out.print("\nEnter amount to deposit into your current account balance: ");
         double depositAmount = scanner.nextDouble();
+
+        double preBalance = user[userNumber].getAccountBalance();
 
         do {
             depositStatus = cardPaymentMethod();
@@ -554,18 +573,32 @@ public class CryptoMarket {
         user[userNumber].setAccountBalance(deposit.getBalance());
 
         System.out.println("\n.\n.\n.\nTransaction Successfull.");
+
+        //userID, deposit, amountDeposit, previousBalance, updatedBalance
+        bw.write(user[userNumber].getuserID() + " deposit " + depositAmount + " " + String.format("%.2f", preBalance) + " " + String.format("%.2f", user[userNumber].getAccountBalance()));
+        bw.newLine();
+        bw.close();
+
+        System.out.println("Deposit Transaction Saved\n");
     }
 
     /**
      * *
      * Method to withdraw fund from user account balance
+     *
+     * @throws java.io.IOException
      */
-    public static void toWithdraw() {
+    public static void toWithdraw() throws IOException {
         scanner = new Scanner(System.in);
+        File transactionFile = new File("DpsWdrw.txt");
+        FileWriter transactionFileWriter = new FileWriter(transactionFile, true);
+        BufferedWriter bw = new BufferedWriter(transactionFileWriter);
         boolean withdrawStatus = false; //withdraw approval
 
         System.out.println("\nWITHDRAW FUND\n================\n***4% WITHDRAWAL TRANSACTION TAX RATE***\nCurrent account information: \n");
         System.out.println("Name: " + user[userNumber].getName() + "\n" + "Current Account Balance: " + String.format("%.2f", user[userNumber].getAccountBalance()));
+
+        double preBalance = user[userNumber].getAccountBalance();
 
         do {
             System.out.print("\nEnter amount to withdraw from your current account balance: ");
@@ -579,6 +612,13 @@ public class CryptoMarket {
 
                 System.out.println("\n.\n.\n.\nTransaction Successfull.");
                 withdrawStatus = true;
+
+                //userID, withdarw, amountWithdraw, previousBalance, updatedBalance
+                bw.write(user[userNumber].getuserID() + " withdarw " + withdrawAmount + " " + String.format("%.2f", preBalance) + " " + String.format("%.2f", user[userNumber].getAccountBalance()));
+                bw.newLine();
+                bw.close();
+
+                System.out.println("Withdraw Transaction Saved\n");
             } else {
                 System.out.println("ERROR:\nInsufficient fund to withdraw.");
             }
